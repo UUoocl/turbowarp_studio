@@ -48,6 +48,10 @@ A powerful, self-contained, and unsandboxed extension that allows [TurboWarp](ht
 5.  **IMPORTANT**: Check the **Unsandboxed** checkbox.
 6.  Click **Load**.
 
+### Getting started video
+
+[Getting started with Turbowarp Studio on youtube](https://youtu.be/r0GnJWjeixw)
+
 #### 📚 Documentation
 - [How to Visualize OBS Scenes](./docs/how_to_visualize_scenes_in_turbowarp_studio.md) - A step-by-step guide on mirroring OBS layouts in TurboWarp.
 - [Block Reference](./docs/block_reference.md) - Detailed descriptions of every block available in the extension.
