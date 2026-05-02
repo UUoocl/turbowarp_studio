@@ -1,10 +1,10 @@
 # 🚀 TurboWarp Studio
 
-Welcome to **TurboWarp Studio**, a dedicated project designed to bridge the world of creative coding with professional broadcasting.
+Welcome to **TurboWarp Studio**, a project designed to bridge the world of creative coding with professional broadcasting.
 
 ## 🌟 What is TurboWarp?
 
-[TurboWarp](https://turbowarp.org/) is a powerful, high-performance variant of **Scratch**. While it remains 100% compatible with Scratch projects, it introduces professional-grade features such as:
+[TurboWarp](https://turbowarp.org/) is a powerful, high-performance variant of **Scratch** that introduces professional-grade features such as:
 - **High Performance**: A custom compiler that runs projects significantly faster than the standard Scratch interpreter.
 - **Unsandboxed Extensions**: The ability to interact with the local file system, network, and external hardware (like OBS).
 - **Advanced Editor**: Support for custom stage sizes, high-quality rendering, and a wide array of developer tools.
