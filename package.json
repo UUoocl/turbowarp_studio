@@ -1,0 +1,16 @@
+{
+  "name": "turbowarp-obs-websocket",
+  "version": "1.0.0",
+  "description": "OBS WebSocket extension for TurboWarp",
+  "main": "dist/turbowarp_studio.js",
+  "scripts": {
+    "build": "node esbuild.js",
+    "dev": "node esbuild.js --watch"
+  },
+  "dependencies": {
+    "obs-websocket-js": "^5.0.5"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.0"
+  }
+}
