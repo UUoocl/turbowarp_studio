@@ -1,9 +1,14 @@
-export const whenSceneBecomes = (extension, args) => {
+import OBSWebSocketExtension from "../extension";
+
+export const whenSceneBecomes = (
+  extension: OBSWebSocketExtension,
+  args: { SCENE: string }
+) => {
   return extension.currentSceneName === args.SCENE;
 };
 
-export const whenEvent = (extension, args) => {
-  return true; 
+export const whenEvent = (_extension: OBSWebSocketExtension, _args: any) => {
+  return true;
 };
 
 export const whenSceneChanged = () => true;

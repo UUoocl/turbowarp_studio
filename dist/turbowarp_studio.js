@@ -1,4 +1,11 @@
+// Name: OBS WebSocket
+// ID: obswebsocket
+// Description: Control OBS Studio through WebSocket 5.x.
+// By: uuoocl <https://github.com/uuoocl/turbowarp_studio>
+// License: MPL-2.0
+
 (function(Scratch) { "use strict"; if (!Scratch.extensions.unsandboxed) { throw new Error("OBS WebSocket extension must run unsandboxed"); }
+"use strict";
 var OBSWebSocketExtensionBundle = (() => {
   var __create = Object.create;
   var __defProp = Object.defineProperty;
@@ -1521,7 +1528,7 @@ var OBSWebSocketExtensionBundle = (() => {
     }
   });
 
-  // src/blocks.js
+  // src/blocks.ts
   var getBlocks = (extension2) => {
     return [
       {
@@ -1529,7 +1536,10 @@ var OBSWebSocketExtensionBundle = (() => {
         blockType: Scratch.BlockType.COMMAND,
         text: "connect to OBS at [URL] password [PASS]",
         arguments: {
-          URL: { type: Scratch.ArgumentType.STRING, defaultValue: "ws://127.0.0.1:4455" },
+          URL: {
+            type: Scratch.ArgumentType.STRING,
+            defaultValue: "ws://127.0.0.1:4455"
+          },
           PASS: { type: Scratch.ArgumentType.STRING, defaultValue: "" }
         }
       },
@@ -1705,7 +1715,10 @@ var OBSWebSocketExtensionBundle = (() => {
         blockType: Scratch.BlockType.REPORTER,
         text: "OBS request [METHOD] params [JSON]",
         arguments: {
-          METHOD: { type: Scratch.ArgumentType.STRING, defaultValue: "GetVersion" },
+          METHOD: {
+            type: Scratch.ArgumentType.STRING,
+            defaultValue: "GetVersion"
+          },
           JSON: { type: Scratch.ArgumentType.STRING, defaultValue: "{}" }
         }
       },
@@ -1839,7 +1852,16 @@ var OBSWebSocketExtensionBundle = (() => {
       },
       TRANSFORM_MENU: {
         acceptReporters: true,
-        items: ["x", "y", "width", "height", "rotation", "scaleX", "scaleY", "enabled"]
+        items: [
+          "x",
+          "y",
+          "width",
+          "height",
+          "rotation",
+          "scaleX",
+          "scaleY",
+          "enabled"
+        ]
       }
     };
   };
@@ -2201,7 +2223,7 @@ var OBSWebSocketExtensionBundle = (() => {
   };
   var json_default = OBSWebSocket;
 
-  // src/handlers/connection.js
+  // src/handlers/connection.ts
   var connect = async (extension2, args) => {
     const url = args.URL || "ws://127.0.0.1:4455";
     const password = args.PASS || "";
@@ -2212,35 +2234,47 @@ var OBSWebSocketExtensionBundle = (() => {
       extension2.obs = new json_default();
       const originalEmit = extension2.obs.emit;
       extension2.obs.emit = (event, data) => {
-        const internalEvents = ["ConnectionOpened", "Hello", "Identified", "ConnectionClosed", "ConnectionError"];
+        const internalEvents = [
+          "ConnectionOpened",
+          "Hello",
+          "Identified",
+          "ConnectionClosed",
+          "ConnectionError"
+        ];
         if (!internalEvents.includes(event)) {
           extension2.lastEventType = event;
           extension2.lastEventData = data || {};
           console.log(`[OBS] Triggering event: ${event}`);
-          Scratch.vm.runtime.startHats("obswebsocket_whenEvent", {
+          extension2.runtime.startHats("obswebsocket_whenEvent", {
             EVENT: event
           });
           if (event === "CurrentProgramSceneChanged") {
             extension2.currentSceneName = data.sceneName;
             extension2.updateCurrentSceneItems();
-            Scratch.vm.runtime.startHats("obswebsocket_whenSceneChanged");
-            Scratch.vm.runtime.startHats("obswebsocket_whenSceneBecomes", {
+            extension2.runtime.startHats("obswebsocket_whenSceneChanged");
+            extension2.runtime.startHats("obswebsocket_whenSceneBecomes", {
               SCENE: data.sceneName
             });
           }
           if (event === "RecordStateChanged")
-            Scratch.vm.runtime.startHats("obswebsocket_whenRecordStateChanged");
+            extension2.runtime.startHats("obswebsocket_whenRecordStateChanged");
           if (event === "StreamStateChanged")
-            Scratch.vm.runtime.startHats("obswebsocket_whenStreamStateChanged");
+            extension2.runtime.startHats("obswebsocket_whenStreamStateChanged");
           if (event === "VirtualcamStateChanged")
-            Scratch.vm.runtime.startHats("obswebsocket_whenVirtualCamStateChanged");
+            extension2.runtime.startHats(
+              "obswebsocket_whenVirtualCamStateChanged"
+            );
           if (event === "SceneItemTransformChanged" && data.sceneName === extension2.currentSceneName) {
-            const item = extension2.currentSceneItems.find((i) => i.sceneItemId === data.sceneItemId);
+            const item = extension2.currentSceneItems.find(
+              (i) => i.sceneItemId === data.sceneItemId
+            );
             if (item)
               item.sceneItemTransform = data.sceneItemTransform;
           }
           if (event === "SceneItemEnableStateChanged" && data.sceneName === extension2.currentSceneName) {
-            const item = extension2.currentSceneItems.find((i) => i.sceneItemId === data.sceneItemId);
+            const item = extension2.currentSceneItems.find(
+              (i) => i.sceneItemId === data.sceneItemId
+            );
             if (item)
               item.sceneItemEnabled = data.sceneItemEnabled;
           }
@@ -2295,7 +2329,7 @@ var OBSWebSocketExtensionBundle = (() => {
     return extension2.connected;
   };
 
-  // src/utils.js
+  // src/utils.ts
   var obsToScratch = (x, y, width, height, alignment, videoSettings, stageWidth = 480, stageHeight = 360) => {
     let ax = x;
     let ay = y;
@@ -2320,7 +2354,7 @@ var OBSWebSocketExtensionBundle = (() => {
     return val * (stageHeight / videoSettings.baseHeight);
   };
 
-  // src/handlers/scenes.js
+  // src/handlers/scenes.ts
   var refreshCache = async (extension2) => {
     if (!extension2.obs || !extension2.connected)
       return;
@@ -2328,10 +2362,15 @@ var OBSWebSocketExtensionBundle = (() => {
       const scenes = await extension2.obs.call("GetSceneList");
       const fullCache = [];
       for (const s of scenes.scenes) {
-        const items = await extension2.obs.call("GetSceneItemList", { sceneName: s.sceneName });
+        const items = await extension2.obs.call("GetSceneItemList", {
+          sceneName: s.sceneName
+        });
         fullCache.push({
           sceneName: s.sceneName,
-          items: items.sceneItems.map((i) => ({ name: i.sourceName, id: i.sceneItemId }))
+          items: items.sceneItems.map((i) => ({
+            name: i.sourceName,
+            id: i.sceneItemId
+          }))
         });
       }
       extension2.sceneCache = fullCache;
@@ -2400,9 +2439,21 @@ var OBSWebSocketExtensionBundle = (() => {
     if (prop === "y")
       return scratchPos.y;
     if (prop === "width")
-      return scratchScale(transform.width, true, extension2.videoSettings, stageWidth, stageHeight);
+      return scratchScale(
+        transform.width,
+        true,
+        extension2.videoSettings,
+        stageWidth,
+        stageHeight
+      );
     if (prop === "height")
-      return scratchScale(transform.height, false, extension2.videoSettings, stageWidth, stageHeight);
+      return scratchScale(
+        transform.height,
+        false,
+        extension2.videoSettings,
+        stageWidth,
+        stageHeight
+      );
     if (prop === "rotation")
       return transform.rotation;
     return "";
@@ -2439,15 +2490,27 @@ var OBSWebSocketExtensionBundle = (() => {
     if (prop === "y")
       return scratchPos.y;
     if (prop === "width")
-      return scratchScale(transform.width, true, extension2.videoSettings, stageWidth, stageHeight);
+      return scratchScale(
+        transform.width,
+        true,
+        extension2.videoSettings,
+        stageWidth,
+        stageHeight
+      );
     if (prop === "height")
-      return scratchScale(transform.height, false, extension2.videoSettings, stageWidth, stageHeight);
+      return scratchScale(
+        transform.height,
+        false,
+        extension2.videoSettings,
+        stageWidth,
+        stageHeight
+      );
     return "";
   };
   var getAllSourcesJSON = (extension2) => {
     return JSON.stringify(extension2.currentSceneItems);
   };
-  var setSpriteStretch = (extension2, args, util) => {
+  var setSpriteStretch = (_extension, args, util) => {
     const target = util.target;
     if (!target || target.isStage)
       return;
@@ -2470,7 +2533,7 @@ var OBSWebSocketExtensionBundle = (() => {
     }
   };
 
-  // src/handlers/media.js
+  // src/handlers/media.ts
   var controlStream = async (extension2, args) => {
     if (!extension2.obs || !extension2.connected)
       return;
@@ -2487,11 +2550,14 @@ var OBSWebSocketExtensionBundle = (() => {
     await extension2.obs.call(args.ACTION + "VirtualCam");
   };
 
-  // src/handlers/audio.js
+  // src/handlers/audio.ts
   var setInputMute = async (extension2, args) => {
     if (!extension2.obs || !extension2.connected)
       return;
-    await extension2.obs.call("SetInputMute", { inputName: args.INPUT, inputMuted: args.STATE === "true" });
+    await extension2.obs.call("SetInputMute", {
+      inputName: args.INPUT,
+      inputMuted: args.STATE === "true"
+    });
   };
   var toggleInputMute = async (extension2, args) => {
     if (!extension2.obs || !extension2.connected)
@@ -2502,14 +2568,17 @@ var OBSWebSocketExtensionBundle = (() => {
     if (!extension2.obs || !extension2.connected)
       return;
     const vol = parseFloat(args.VOLUME) / 100;
-    await extension2.obs.call("SetInputVolume", { inputName: args.INPUT, inputVolumeMul: vol });
+    await extension2.obs.call("SetInputVolume", {
+      inputName: args.INPUT,
+      inputVolumeMul: vol
+    });
   };
 
-  // src/handlers/events.js
+  // src/handlers/events.ts
   var whenSceneBecomes = (extension2, args) => {
     return extension2.currentSceneName === args.SCENE;
   };
-  var whenEvent = (extension2, args) => {
+  var whenEvent = (_extension, _args) => {
     return true;
   };
   var whenSceneChanged = () => true;
@@ -2517,7 +2586,7 @@ var OBSWebSocketExtensionBundle = (() => {
   var whenStreamStateChanged = () => true;
   var whenVirtualCamStateChanged = () => true;
 
-  // src/handlers/generic.js
+  // src/handlers/generic.ts
   var sendRequest = async (extension2, args) => {
     if (!extension2.obs || !extension2.connected)
       return "Not connected";
@@ -2533,7 +2602,7 @@ var OBSWebSocketExtensionBundle = (() => {
   var setSubscription = (extension2, args) => {
     const sub = args.SUB;
     const state = args.STATE === "true";
-    if (extension2.subscriptions.hasOwnProperty(sub)) {
+    if (Object.prototype.hasOwnProperty.call(extension2.subscriptions, sub)) {
       extension2.subscriptions[sub] = state;
       console.log(`Subscription ${sub} set to ${state}`);
     }
@@ -2546,14 +2615,24 @@ var OBSWebSocketExtensionBundle = (() => {
   };
   var getEventProperty = (extension2, args) => {
     const prop = args.PROP;
-    if (extension2.lastEventData && extension2.lastEventData.hasOwnProperty(prop)) {
+    if (extension2.lastEventData && Object.prototype.hasOwnProperty.call(extension2.lastEventData, prop)) {
       return extension2.lastEventData[prop];
     }
     return "";
   };
 
-  // src/extension.js
+  // src/extension.ts
   var OBSWebSocketExtension = class {
+    runtime;
+    obs;
+    connected;
+    lastEventData;
+    lastEventType;
+    subscriptions;
+    sceneCache;
+    videoSettings;
+    currentSceneItems;
+    currentSceneName;
     constructor() {
       this.runtime = Scratch.vm.runtime;
       this.obs = null;
@@ -2581,7 +2660,7 @@ var OBSWebSocketExtensionBundle = (() => {
       this.videoSettings = { baseWidth: 1920, baseHeight: 1080 };
       this.currentSceneItems = [];
       this.currentSceneName = "";
-      Scratch.vm.runtime.on("PROJECT_STOP_ALL", () => {
+      this.runtime.on("PROJECT_STOP_ALL", () => {
         this.disconnect();
       });
     }
@@ -2612,9 +2691,14 @@ var OBSWebSocketExtensionBundle = (() => {
       try {
         const scene = await this.obs.call("GetCurrentProgramScene");
         this.currentSceneName = scene.sceneName;
-        const items = await this.obs.call("GetSceneItemList", { sceneName: scene.sceneName });
+        const items = await this.obs.call("GetSceneItemList", {
+          sceneName: scene.sceneName
+        });
         this.currentSceneItems = items.sceneItems;
-        console.log(`Updated items for scene "${scene.sceneName}":`, this.currentSceneItems.length);
+        console.log(
+          `Updated items for scene "${scene.sceneName}":`,
+          this.currentSceneItems.length
+        );
       } catch (e) {
         console.error("Failed to update scene items:", e);
       }
@@ -2730,7 +2814,7 @@ var OBSWebSocketExtensionBundle = (() => {
   };
   var extension_default = OBSWebSocketExtension;
 
-  // src/index.js
+  // src/index.ts
   var extension = new extension_default();
   Scratch.extensions.register(extension);
 })();

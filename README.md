@@ -60,14 +60,21 @@ A powerful, self-contained, and unsandboxed extension that allows [TurboWarp](ht
 
 ### 🛠️ Developer Overview
 
-This repository is structured for advanced extension development using a modular ES6 approach.
+This repository has been migrated to **TypeScript** to ensure robust development and maintainability. The codebase follows a modular ES6 approach and adheres to strict security standards.
 
-#### Build System
-- **Source**: Extension code is located in `src/`.
-- **Bundling**: We use `esbuild` to bundle dependencies and transpile code into a single distribution file.
-- **Commands**:
-  - `npm run build`: Bundles the extension into `dist/turbowarp_studio.js`.
-  - `npm run dev`: Automatically rebuilds the extension on file changes.
+#### Infrastructure
+- **Source**: Extension code is located in `src/` (now in `.ts`).
+- **Bundling**: We use `esbuild` for high-speed bundling and dependency management.
+- **Type Safety**: Full TypeScript integration with specialized types for the Scratch VM and OBS WebSocket.
+- **Linting & Formatting**: Integrated ESLint rules and Prettier configurations from the official TurboWarp extensions master repository.
+- **Security**: Strict avoidance of `eval()` and `new Function()` for executing project-supplied code.
+
+#### Commands
+- `npm run build`: Bundles the extension into `dist/turbowarp_studio.js`.
+- `npm run dev`: Rebuilds automatically on file changes.
+- `npm run type-check`: Verifies code correctness without emitting files.
+- `npm run lint`: Checks for common errors and style violations.
+- `npm run format`: Ensures a consistent code style across the project.
 
 #### Demo Generation
 To maintain high-fidelity test projects, we use a Python-based generator located in `scratch/generate_demo.py`. This script programmatically creates `.sb3` files with:
@@ -76,10 +83,11 @@ To maintain high-fidelity test projects, we use a Python-based generator located
 - Hardcoded test credentials for rapid debugging.
 
 #### Workflow
-1.  **Modify Source**: Edit files in `src/`.
-2.  **Build**: Run `npm run build` to update the distribution file.
-3.  **Generate Demo**: Run `python3 scratch/generate_demo.py` to rebuild the sample project.
-4.  **Test**: Load the bundled script or the generated `.sb3` into TurboWarp.
+1.  **Modify Source**: Edit TypeScript files in `src/`.
+2.  **Verify**: Run `npm run type-check` and `npm run lint`.
+3.  **Build**: Run `npm run build` to update the distribution file.
+4.  **Generate Demo**: Run `python3 scratch/generate_demo.py` to rebuild the sample project.
+5.  **Test**: Load the bundled script or the generated `.sb3` into TurboWarp.
 
 ---
 🚀 *This workspace is curated and developed with the assistance of **Antigravity**, an advanced AI coding assistant.*
